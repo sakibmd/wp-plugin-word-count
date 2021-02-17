@@ -16,17 +16,11 @@
  */
 
 
-// function wordcount_activation_hook(){
-
-// }
-
+// function wordcount_activation_hook(){}
 // register_activation_hook(__FILE__, "wordcount_activation_hook");
 
 
-// function wordcount_deactivation_hook(){
-
-// }
-
+// function wordcount_deactivation_hook(){}
 // register_deactivation_hook(__FILE__, "wordcount_deactivation_hook");
 
 
@@ -41,13 +35,59 @@ function wordcount_count_words($content){
     $stripped_tags = strip_tags($content);
     $wordn = str_word_count($stripped_tags);
     $label = __('Total Number of words:', 'word-count');
-    $content .= sprintf("<p>%s = %s</p>", $label, $wordn);
+    $label = apply_filters("wordcount_heading", $label);
+    $tag = apply_filters("wordcount_tag", "p");
+    $content .= sprintf("<%s>%s %s</%s>", $tag, $label, $wordn, $tag);
     return $content;
 }
 
 
 add_filter('the_content', 'wordcount_count_words');
 
+
+function wordcount_tag_callback($tag){
+    $tag = "strong";
+    return $tag;
+}
+add_filter('wordcount_tag', 'wordcount_tag_callback');
+
+
+
+
+
+function wordcount_heading_callback($heading){
+    $heading = "Total Words: ";
+    return $heading;
+}
+add_filter('wordcount_heading', 'wordcount_heading_callback');
+
+
+
+
+
+function wordcount_reading_time($content){
+
+    $stripped_tags = strip_tags($content);
+    $wordn = str_word_count($stripped_tags);
+    $reading_minute = floor($wordn/200);
+    $reading_seconds = floor( $wordn % 200 / (200/60) );
+    $is_visible = apply_filters("wordcount_display_readingtime", 1);
+    if($is_visible){
+        $label = __('Total Reading Time:', 'word-count');
+        $label = apply_filters("wordcount_reading_heading", $label);
+        $tag = apply_filters("wordcount_reading_tag", "h3");
+        $content .= sprintf("<%s>%s %s minutes %s seconds</%s>", $tag, $label, $reading_minute, $reading_seconds, $tag);
+    }
+    
+    return $content;
+}
+add_filter("the_content", "wordcount_reading_time");
+
+function wordcount_reading_tag_callback($tag){
+    $tag = "h4" ;
+    return $tag;
+}
+add_filter('wordcount_reading_tag', 'wordcount_reading_tag_callback')
 
 
 ?>

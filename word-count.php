@@ -38,11 +38,26 @@ function wordcount_count_words($content){
     $label = apply_filters("wordcount_heading", $label);
     $tag = apply_filters("wordcount_tag", "p");
     $content .= sprintf("<%s>%s %s</%s>", $tag, $label, $wordn, $tag);
+    do_action('wordcount_post_description_title');
+
     return $content;
 }
 
-
 add_filter('the_content', 'wordcount_count_words');
+
+
+
+
+function wordcount_heading_callback($heading){
+    $heading = "Total Words: ";
+    return $heading;
+}
+add_filter('wordcount_heading', 'wordcount_heading_callback');
+
+
+
+
+
 
 
 function wordcount_tag_callback($tag){
@@ -54,12 +69,6 @@ add_filter('wordcount_tag', 'wordcount_tag_callback');
 
 
 
-
-function wordcount_heading_callback($heading){
-    $heading = "Total Words: ";
-    return $heading;
-}
-add_filter('wordcount_heading', 'wordcount_heading_callback');
 
 
 
@@ -87,7 +96,15 @@ function wordcount_reading_tag_callback($tag){
     $tag = "h4" ;
     return $tag;
 }
-add_filter('wordcount_reading_tag', 'wordcount_reading_tag_callback')
+add_filter('wordcount_reading_tag', 'wordcount_reading_tag_callback');
 
+
+
+function wordcount_post_description_title_callback(){
+    echo "<h6>Description (using action hook)</h6>";
+}
+
+
+add_action("wordcount_post_description_title", "wordcount_post_description_title_callback");
 
 ?>
